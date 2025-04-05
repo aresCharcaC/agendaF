@@ -1,24 +1,39 @@
-FROM richarvey/nginx-php-fpm:3.1.6
+FROM php:8.2-cli
 
+# Instalar dependencias
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libpq-dev \
+    zip \
+    unzip
+
+# Limpiar cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Instalar extensiones PHP
+RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
+
+# Obtener Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configurar directorio de trabajo
+WORKDIR /var/www/html
+
+# Copiar código del proyecto
 COPY . .
 
-# Image config
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 0
-ENV REAL_IP_HEADER 1
+# Configurar permisos
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
-
-# Allow composer to run as root
-ENV COMPOSER_ALLOW_SUPERUSER 1
-
-# Usar nuestro script personalizado en lugar del de la imagen
+# Usar nuestro script personalizado
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
+
+# Exponer el puerto que Render asignará
+EXPOSE 8000
 
 CMD ["/start.sh"]

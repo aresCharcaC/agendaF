@@ -1,14 +1,11 @@
 #!/bin/bash
 
-# Configurar nginx para usar el puerto asignado por Render
-if [ -n "$PORT" ]; then
-    echo "Configuring nginx for PORT: $PORT"
-    sed -i "s/listen 80;/listen $PORT;/" /etc/nginx/sites-available/default
-fi
+# Establecer directorio de trabajo
+cd /var/www/html
 
 # Ejecutar scripts de despliegue
 echo "Running composer..."
-composer install --no-dev --working-dir=/var/www/html
+composer install --no-dev
 
 echo "Caching config..."
 php artisan config:cache
@@ -19,9 +16,6 @@ php artisan route:cache
 echo "Running migrations..."
 php artisan migrate --force
 
-# Iniciar nginx y php-fpm
-echo "Starting nginx..."
-service nginx start
-
-echo "Starting PHP-FPM in foreground..."
-php-fpm -F
+# Iniciar servidor de Laravel
+echo "Starting Laravel server on port ${PORT:-8000}..."
+php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
