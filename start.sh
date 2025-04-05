@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Configurar nginx para usar el puerto asignado por Render
+if [ -n "$PORT" ]; then
+    echo "Configuring nginx for PORT: $PORT"
+    sed -i "s/listen 80;/listen $PORT;/" /etc/nginx/sites-available/default
+fi
+
 # Ejecutar scripts de despliegue
 echo "Running composer..."
 composer install --no-dev --working-dir=/var/www/html
@@ -17,5 +23,5 @@ php artisan migrate --force
 echo "Starting nginx..."
 service nginx start
 
-echo "Starting PHP-FPM..."
-php-fpm
+echo "Starting PHP-FPM in foreground..."
+php-fpm -F
