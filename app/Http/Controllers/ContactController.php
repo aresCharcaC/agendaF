@@ -64,7 +64,7 @@ class ContactController extends Controller
     public function show(Contact $contact)
     {
         // Verificar que el contacto pertenezca al usuario autenticado
-        if ($contact->user_id = Auth::id()) {
+        if ($contact->user_id !== Auth::id()) {
             abort(403);
         }
         
@@ -77,7 +77,7 @@ class ContactController extends Controller
     public function edit(Contact $contact)
     {
         // Verificar que el contacto pertenezca al usuario autenticado
-        if ($contact->user_id = Auth::id()) {
+        if ($contact->user_id !== Auth::id()) {
             abort(403);
         }
         
@@ -90,7 +90,7 @@ class ContactController extends Controller
     public function update(Request $request, Contact $contact)
     {
         // Verificar que el contacto pertenezca al usuario autenticado
-        if ($contact->user_id = Auth::id()) {
+        if ($contact->user_id !== Auth::id()) {
             abort(403);
         }
         
@@ -114,7 +114,7 @@ class ContactController extends Controller
     public function destroy(Contact $contact)
     {
         // Verificar que el contacto pertenezca al usuario autenticado
-        if ($contact->user_id = Auth::id()) {
+        if ($contact->user_id !== Auth::id()) {
             abort(403);
         }
         
