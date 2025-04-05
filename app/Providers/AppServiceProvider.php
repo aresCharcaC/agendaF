@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Providers;
+use Illuminate\Routing\UrlGenerator;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,24 +17,14 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
+     *
+     * @param UrlGenerator $url
+     * @return void
      */
-    public function boot(): void
+    public function boot(UrlGenerator $url)
     {
-        if (config('app.env') === 'production') {
-            URL::forceScheme('https');
-            
-            // Deshabilitar Vite en producción
-            \Illuminate\Foundation\Vite::macro('useBuildDirectory', function () {
-                return $this;
-            });
-            
-            \Illuminate\Foundation\Vite::macro('useHotFile', function () {
-                return $this;
-            });
-            
-            \Illuminate\Foundation\Vite::macro('withEntryPoints', function () {
-                return $this;
-            });
+        if (env('APP_ENV') == 'production') {
+            $url->forceScheme('https');
         }
     }
 }

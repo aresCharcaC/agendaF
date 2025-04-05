@@ -9,7 +9,9 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libpq-dev \
     zip \
-    unzip
+    unzip \
+    nodejs \
+    npm
 
 # Limpiar cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -25,6 +27,12 @@ WORKDIR /var/www/html
 
 # Copiar código del proyecto
 COPY . .
+
+# Instalar dependencias PHP
+RUN composer install --no-dev --optimize-autoloader
+
+# Instalar dependencias Node.js y compilar assets
+RUN npm install && npm run build
 
 # Configurar permisos
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
