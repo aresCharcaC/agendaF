@@ -3,19 +3,26 @@
 # Establecer directorio de trabajo
 cd /var/www/html
 
+# Mostrar variables de entorno (sin valores sensibles)
+echo "Checking environment..."
+echo "APP_ENV: $APP_ENV"
+echo "APP_DEBUG: $APP_DEBUG"
+echo "DB_CONNECTION type: $DB_CONNECTION"
+echo "Database connection check..."
+
 # Ejecutar scripts de despliegue
 echo "Running composer..."
 composer install --no-dev
 
-echo "Caching config..."
-php artisan config:cache
+echo "Clearing configuration cache..."
+php artisan config:clear
 
-echo "Caching routes..."
-php artisan route:cache
+echo "Checking database connection..."
+php artisan db:monitor
 
 echo "Running migrations..."
 php artisan migrate --force
 
-# Iniciar servidor de Laravel
+# Iniciar servidor de Laravel con más información
 echo "Starting Laravel server on port ${PORT:-8000}..."
-php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+php artisan serve --host=0.0.0.0 --port=${PORT:-8000} --verbose
